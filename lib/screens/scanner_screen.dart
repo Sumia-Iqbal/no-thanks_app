@@ -12,28 +12,126 @@ class ScannerScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration:BoxDecoration(
-          image:DecorationImage(image: AssetImage("assets/images/How to spot products made in Israel_ barcode 729.jpeg"))
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            ElevatedButton.icon(icon:Icon(Icons.camera),style:ElevatedButton.styleFrom(backgroundColor: Colors.red,foregroundColor: Colors.white,),onPressed:  () {
-        scanBarCode(context);
-            },
+      // 👇 Floating Scan Button
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.green,
+        elevation: 6,
+        shape: CircleBorder(),
+        onPressed: () {scanBarCode(context);
 
-             label: Text("scan Barcode")),
-            SizedBox(height: 20),
-            // Show scan results reactively
-            Obx(() => Text(
-              "Result: ${scanResults.value}",
-              style: TextStyle(fontSize: 18),
-            )),
-          ],
+          },
+        child: Icon(Icons.document_scanner, color: Colors.white, size: 28),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+
+      // 👇 Custom Bottom NavBar
+      bottomNavigationBar: BottomAppBar(
+        shape: CircularNotchedRectangle(), // space for FAB
+        notchMargin: 8.0,
+        child: Container(
+          height: 60,
+          padding: EdgeInsets.symmetric(horizontal: 15),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black12,
+                blurRadius: 8,
+                offset: Offset(0, -2),
+              )
+            ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              buildNavItem(Icons.list, "The List"),
+              buildNavItem(Icons.support_agent, "Support"),
+              SizedBox(width: 40), // gap for center FAB
+              buildNavItem(Icons.info_outline, "About"),
+              buildNavItem(Icons.storefront, "Store"),
+            ],
+          ),
         ),
       ),
+
+      // 👇 Body
+      body:  Column(
+          children: [
+            Image.asset(
+                "assets/images/How to spot products made in Israel_ barcode 729.jpeg"),
+            Expanded(
+              child: Container(
+                margin: EdgeInsets.symmetric(horizontal: 20),
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                decoration: BoxDecoration(
+                  color: Colors.green,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  ),
+                ),
+                child: Column(children: [
+                  SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("Welcome to",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w600)),
+                            RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: "No!\n",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: "Thanks",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          ]),
+                      Text("🖐", style: TextStyle(fontSize: 40))
+                    ],
+                  ),
+                  Expanded(
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                         Text("make Informed choices\nabout the products you buy",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    )),
+                                  
+                          Container(
+                              padding: EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                  color: Colors.white, shape: BoxShape.circle),
+                              child: Icon(Icons.share_sharp,
+                                  color: Colors.green, size: 20))
+                        ]),
+                  ),
+                ]),
+              ),
+            ),
+          ],
+        ),
+     
     );
   }
 
@@ -49,16 +147,30 @@ class ScannerScreen extends StatelessWidget {
         ),
         isShowFlashIcon: true,
         delayMillis: 2000,
-        cameraFace: CameraFace.front,
+        cameraFace: CameraFace.back,
       );
 
-      if (res != null && res != "-1") { // -1 scanner cancel hone ka result hota hai
+      if (res != null && res != "-1") {
         scanResults.value = res;
-        await scanController.fetchApi(scanResults.value);
-        Get.to(() => const ShowResults());  // ✅ navigate properly
+        await scanController.fetchApi(scanResults.value); // 👈 sirf yeh
+        Get.to(() => const ShowResults()); // 👈 aur yeh
       }
     } on PlatformException {
       scanResults.value = "Failed to scan results";
     }
   }
+
+  Widget buildNavItem(IconData icon, String label) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, color: Colors.black54),
+        SizedBox(height: 4),
+        Text(
+          label,
+          style: TextStyle(fontSize: 12, color: Colors.black54),
+        ),
+      ],
+    );
   }
+}
