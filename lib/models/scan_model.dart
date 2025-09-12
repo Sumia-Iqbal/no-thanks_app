@@ -1,42 +1,47 @@
 class ScanModel {
-  String productName;
   String message;
   String reason;
   String companyName;
-  String? companyImage;
-  String companyproof;
-  String proofUrl;
+  String companyImageUrl;   // ✅ company image url
+  String companyProof;
+  String companyProofUrl;
+  String productName;
+  String productImageUrl;   // ✅ product image url
+  String productProof;
+  String productProofUrl;
   String parentCompanyName;
-  String parentUrl;
-
 
   ScanModel({
-    required this.productName,
     required this.message,
     required this.reason,
     required this.companyName,
-    this.companyImage,
-    required this.companyproof,
-    required this.proofUrl,
+    required this.companyImageUrl,
+    required this.companyProof,
+    required this.companyProofUrl,
+    required this.productName,
+    required this.productImageUrl,
+    required this.productProof,
+    required this.productProofUrl,
     required this.parentCompanyName,
-    required this.parentUrl,
   });
 
   factory ScanModel.fromJson(Map<String, dynamic> json) {
-    final barcodeDetails = json["barcode_details"] ?? {};
     final company = json["company"] ?? {};
-    final parentCompany = json["parentCompany"]??{};
+    final product = json["product"] ?? {};
+    final barcodeDetails = json["barcode_details"] ?? {};
+
     return ScanModel(
-      productName: barcodeDetails["product_name"] ?? "",
       message: json["message"] ?? "",
       reason: json["reason"] ?? "",
       companyName: company["name"] ?? "",
-      companyImage: company["image"],
-      companyproof: company[ "proof"],
-      proofUrl: company[ "proof_url"],
-      parentCompanyName: parentCompany["name"],
-      parentUrl: parentCompany["proof_url"]
-
+      companyImageUrl: company["image_url"] ?? "",   // 🔥 null safe
+      companyProof: company["proof"] ?? "",
+      companyProofUrl: company["proof_url"] ?? "",
+      productName: product["name"] ?? barcodeDetails["product_name"] ?? "",
+      productImageUrl: product["image_url"] ?? "",   // 🔥 null safe
+      productProof: product["proof"] ?? "",
+      productProofUrl: product["proof_url"] ?? "",
+      parentCompanyName: product["parentCompany"] ?? "",
     );
   }
 }

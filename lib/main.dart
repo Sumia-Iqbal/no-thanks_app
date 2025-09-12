@@ -14,7 +14,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       title: 'Flutter Demo',
-      home: ScannerScreen()
+      home: ScannerScreen(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
