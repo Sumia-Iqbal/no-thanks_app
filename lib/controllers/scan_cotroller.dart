@@ -113,35 +113,75 @@ class ScanController extends GetxController {
       Get.snackbar("Error", e.toString());
     }
   }
-  Future<void> fetchCompanies() async {
+  Future<void> fetchCompanies({bool isRefresh = false}) async {
     try {
-      var response = await http.get(Uri.parse("$baseUrl/companies/all"));
-      if (response.statusCode == 200) {
-        var data = jsonDecode(response.body);
-        companies.value = List<Map<String, dynamic>>.from(data);
-      } else {
-        log("Failed to load companies");
+      if (isRefresh) {
+        page.value = 0;
+        hasMore.value = true;
+        companies.clear();
       }
-    } catch (e) {
-      log(e.toString());
-      Get.snackbar("Error", e.toString());
-    }
-  }
-  Future<void> fetchCompaniesByCategory(var categoryId) async {
-    try {
+
+      if (!hasMore.value) return;
+
+      isLoading.value = true;
+
       var response = await http.get(
-        Uri.parse("$baseUrl/companies/all?category_id=$categoryId"),
+        Uri.parse("$baseUrl/companies/all?index=${page.value * limit}&limit=$limit"),
       );
+
       if (response.statusCode == 200) {
-        var data = jsonDecode(response.body);
-        companies.value = List<Map<String, dynamic>>.from(data);
+        var data = jsonDecode(response.body) as List;
+
+        if (data.isEmpty) {
+          hasMore.value = false; // 🚫 aur companies nahi hain
+        } else {
+          companies.addAll(List<Map<String, dynamic>>.from(data));
+          page.value++;
+        }
       } else {
-        log("Failed to load companies");
         Get.snackbar("Error", "Failed to fetch companies");
       }
     } catch (e) {
       log(e.toString());
       Get.snackbar("Error", e.toString());
+    } finally {
+      isLoading.value = false;
+    }
+  }
+  Future<void> fetchCompaniesByCategory(var categoryId, {bool isRefresh = false}) async {
+    try {
+      if (isRefresh) {
+        page.value = 0;
+        hasMore.value = true;
+        companies.clear();
+      }
+
+      if (!hasMore.value) return;
+
+      isLoading.value = true;
+
+      var response = await http.get(
+        Uri.parse("$baseUrl/companies/all?category_id=$categoryId&index=${page.value * limit}&limit=$limit"),
+      );
+
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body) as List;
+
+        if (data.isEmpty) {
+          hasMore.value = false;
+        } else {
+          companies.addAll(List<Map<String, dynamic>>.from(data));
+          page.value++;
+        }
+      } else {
+        log("Failed to load companies by category");
+        Get.snackbar("Error", "Failed to fetch companies by category");
+      }
+    } catch (e) {
+      log(e.toString());
+      Get.snackbar("Error", e.toString());
+    } finally {
+      isLoading.value = false;
     }
   }
 

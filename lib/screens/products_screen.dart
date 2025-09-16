@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:no_thanks/helpers/colors.dart';
 import 'package:no_thanks/screens/products_detail.dart';
 import 'package:ready_made_extensions/ready_made_extensions.dart';
 import '../controllers/scan_cotroller.dart';
@@ -9,7 +10,7 @@ class ProductsScreen extends StatelessWidget {
   ProductsScreen({Key? key}) : super(key: key);
 
   final ScanController scanController =
-      Get.find<ScanController>(); // ✅ use same instance
+      Get.find<ScanController>();
   final RxInt selectedIndex = 0.obs;
   final ScrollController scrollController = ScrollController();
 
@@ -46,26 +47,26 @@ class ProductsScreen extends StatelessWidget {
                                 selectedIndex.value = index;
                                 scanController.fetchProducts();
                               },
-                              child: Container(
+                               child: Container(
                                 padding: EdgeInsets.only(left: 12, right: 12),
                                 margin: const EdgeInsets.only(right: 20),
                                 decoration: BoxDecoration(
                                   color: selectedIndex.value == index
-                                      ? Colors.red.withOpacity(0.3)
+                                      ? kSecondary
                                       : Colors.white,
                                   borderRadius: BorderRadius.circular(50),
                                   border: Border.all(
                                     color: selectedIndex.value == index
                                         ? Colors.transparent
-                                        : Colors.black,
+                                        :kSecondary,
                                   ),
                                 ),
                                 child: Center(
                                   child: Text(
                                     "All",
                                     style: TextStyle(
-                                      color: selectedIndex.value == index
-                                          ? Colors.red
+                                      color: selectedIndex.value == index?
+                                      Colors.white
                                           : Colors.black,
                                     ),
                                   ),
@@ -82,8 +83,14 @@ class ProductsScreen extends StatelessWidget {
                                 margin: const EdgeInsets.only(right: 20),
                                 decoration: BoxDecoration(
                                   color: selectedIndex.value == index
-                                      ? Colors.red.withOpacity(0.3)
+                                      ? kSecondary
                                       : Colors.white,
+                                    border: Border.all(
+                                      color: selectedIndex.value == index
+                                          ? Colors.transparent
+                                          :kSecondary,
+                                      width:2
+                                    ),
                                   borderRadius: BorderRadius.circular(50),
                                   // border: Border.all(
                                   //   color: selectedIndex.value == index
@@ -103,7 +110,7 @@ class ProductsScreen extends StatelessWidget {
                                     scanController.categories[index]["name"],
                                     style: TextStyle(
                                       color: selectedIndex.value == index
-                                          ? Colors.red
+                                          ? Colors.white
                                           : Colors.black,
                                     ),
                                   ),
@@ -116,10 +123,10 @@ class ProductsScreen extends StatelessWidget {
               }),
             ),
 
-            const SizedBox(height: 20),
+             const SizedBox(height: 20),
 
             // Products Grid
-        Expanded(
+             Expanded(
           child: Obx(() {
             if (scanController.allProducts.isEmpty &&
                 scanController.isLoading.value) {
